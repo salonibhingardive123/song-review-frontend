@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Song Reviews!</title>
+  <title>Song Reviews</title>
 </head>
 <body>
 
@@ -32,35 +32,59 @@
 <pre id="output"></pre>
 
 <script>
+/*
+Replace this with your Application Gateway Public IP
+Example:
+const API = "http://20.204.xxx.xxx";
+*/
 const API = "http://20.31.83.206";
 
 async function submitReview() {
   const data = {
     songName: document.getElementById("song").value,
-    lyrics: +lyrics.value,
-    vocals: +vocals.value,
-    composition: +composition.value,
-    melody: +melody.value,
-    music: +music.value
+    lyrics: +document.getElementById("lyrics").value,
+    vocals: +document.getElementById("vocals").value,
+    composition: +document.getElementById("composition").value,
+    melody: +document.getElementById("melody").value,
+    music: +document.getElementById("music").value
   };
 
-  await fetch(API + "/reviews", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  });
+  try {
+    const res = await fetch(API + "/reviews", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
 
-  alert("Review added!");
+    if (!res.ok) {
+      throw new Error("Failed to submit review");
+    }
+
+    alert("Review added!");
+  } catch (err) {
+    alert("Error: " + err.message);
+  }
 }
 
 async function getReviews() {
-  const res = await fetch(API + "/reviews");
-  const data = await res.json();
+  try {
+    const res = await fetch(API + "/reviews");
 
-  document.getElementById("output").innerText =
-    JSON.stringify(data, null, 2);
+    if (!res.ok) {
+      throw new Error("Failed to fetch reviews");
+    }
+
+    const data = await res.json();
+
+    document.getElementById("output").innerText =
+      JSON.stringify(data, null, 2);
+
+  } catch (err) {
+    document.getElementById("output").innerText =
+      "Error: " + err.message;
+  }
 }
 </script>
 
